@@ -1,0 +1,17 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+
+img[role="logo"]{
+width: 150px;
+margin: 10px 0 10px 20px;
+
+}
+
+header{
+    background-color: #ef5350;
+}
