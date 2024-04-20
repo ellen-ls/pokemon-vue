@@ -7,6 +7,7 @@ const pokemon = defineProps(["name", "urlBase", "ids"])
        <div class="card p-2 mb-3 cardListPokemon" >
          <p class="text-start text-secondary">#{{ pokemon.ids }}</p>
          <p class="text-center">{{ pokemon.name }}</p>
+         
          <img 
          :src="urlBase" class="card-img-top" 
          alt="..."

@@ -20,7 +20,6 @@ const pokemonsFilter = computed(() => {
   if (pokemons.value && searchPokemonField.value) {
     return pokemons.value.filter((pokemon) =>
       pokemon.name
-      
         .toLowerCase()
         .includes(searchPokemonField.value.toLowerCase())
     );
@@ -44,21 +43,26 @@ const selectPokemon = async (pokemon) => {
       <div class="row mt-4">
         <div class="col-sm-12 col-md-6">
           <CardPokemon
-
+            
             :name="pokemonSelected?.name"
             :xp="pokemonSelected?.base_experience"
+            :hp="pokemonSelected?.stats[0].base_stat"
+            :attack="pokemonSelected?.stats[1].base_stat"
+            :defense="pokemonSelected?.stats[2].base_stat"
+            :special_attack="pokemonSelected?.stats[3].base_stat"
+            :special_defense="pokemonSelected?.stats[4].base_stat"
+            :speed="pokemonSelected?.stats[5].base_stat"
             :height="pokemonSelected?.height"
             :weight="pokemonSelected?.weight"
             :img="pokemonSelected?.sprites.front_default"
             :img2="pokemonSelected?.sprites.back_default"
-              
+            :types="pokemonSelected?.types.map((type)=>type.type.name).join(', ')"
+            :moves="pokemonSelected?.moves.map((moviments)=>moviments.move.name).join(', ')"
+            :abilities="pokemonSelected?.abilities.map((typeSlot)=>typeSlot.ability.name).join(', ')"
+            :gameIndice="pokemonSelected?.game_indices.map((game)=>game.version.name).join(', ')"
+            
+                          
           />
-          <v-chip
-          label
-          v-for="type in pokemonSelected?.types"
-          :key="type.name"
-          >{type.type.name}
-          </v-chip>
 
         </div>
 
