@@ -13,6 +13,7 @@ let pokemonSelected = reactive(ref());
 let searchPokemonType = ref("");
 let pokemonTypes = ref([]);
 let searchPokemonSpecies = ref("");
+let evolutionChain = reactive(ref([]));
 
 onMounted(async () => {
   const res = await fetch(
@@ -26,7 +27,7 @@ onMounted(async () => {
       const resTypes = await fetch("https://pokeapi.co/api/v2/type");
       const dataTypes = await resTypes.json();
       pokemonTypes.value = dataTypes.results.map((type) => type.name);
-      const speciesRes = await fetch(pokemonData.species.url); // Fetch the species data
+      const speciesRes = await fetch(pokemonData.species.url); 
       const speciesData = await speciesRes.json();
       return {
         species: speciesData.name,
@@ -63,10 +64,33 @@ const selectPokemon = async (pokemon) => {
     .then((res) => {
       pokemonSelected.value = res;
       pokemon.type = res.types.map((type) => type.type.name); // Adicione esta linha para salvar o tipo do Pokémon
+      fetchEvolutionChain(res.species.url);
+      
     });
 
-  console.log(pokemonSelected.value);
 };
+
+function getEvolutionNames(chain) {
+  let names = [chain.species.name];
+  if (chain.evolves_to && chain.evolves_to.length > 0) {
+    chain.evolves_to.forEach((evo) => {
+      names.push(...getEvolutionNames(evo));
+    });
+  }
+  return names;
+}
+
+const fetchEvolutionChain = async (speciesUrl) => {
+  const speciesRes = await fetch(speciesUrl);
+  const speciesData = await speciesRes.json();
+  const evolutionChainRes = await fetch(speciesData.evolution_chain.url);
+  const evolutionChainData = await evolutionChainRes.json();
+  
+  const evolutionNames = getEvolutionNames(evolutionChainData.chain);
+  evolutionChain.value = evolutionNames;
+};
+
+
 </script>
 
 <template>
@@ -75,6 +99,7 @@ const selectPokemon = async (pokemon) => {
        <div class="row mt-4">
         <div class="col-sm-12 col-md-6 mb-3 mb-md-0">
           <CardPokemon
+            
             :name="pokemonSelected?.name"
             :xp="pokemonSelected?.base_experience"
             :hp="pokemonSelected?.stats[0].base_stat"
@@ -87,24 +112,12 @@ const selectPokemon = async (pokemon) => {
             :weight="pokemonSelected?.weight"
             :img="pokemonSelected?.sprites.front_default"
             :img2="pokemonSelected?.sprites.back_default"
-            :types="
-              pokemonSelected?.types.map((type) => type.type.name).join(', ')
-            "
-            :moves="
-              pokemonSelected?.moves
-                .map((moviments) => moviments.move.name)
-                .join(', ')
-            "
-            :abilities="
-              pokemonSelected?.abilities
-                .map((typeSlot) => typeSlot.ability.name)
-                .join(', ')
-            "
-            :gameIndice="
-              pokemonSelected?.game_indices
-                .map((game) => game.version.name)
-                .join(', ')
-            "
+            :types="pokemonSelected?.types.map((type) => type.type.name).join(', ')"
+            :moves="pokemonSelected?.moves.map((moviments) => moviments.move.name).join(', ')"
+            :abilities="pokemonSelected?.abilities.map((typeSlot) => typeSlot.ability.name).join(', ')"
+            :gameIndice="pokemonSelected?.game_indices.map((game) => game.version.name).join(', ')"
+            :evolutionChain="evolutionChain.join(', ')"
+                        
           />
         </div>
         <div class="col-sm-12 col-md-6">
@@ -153,7 +166,7 @@ const selectPokemon = async (pokemon) => {
                   </option>
                 </select>
               </div>
-              <PokemonList
+               <PokemonList
                 v-for="pokemon in pokemonsFilter"
                 :key="pokemon.name"
                 :name="pokemon.name"
@@ -201,4 +214,5 @@ const selectPokemon = async (pokemon) => {
 .card-body::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
 </style>

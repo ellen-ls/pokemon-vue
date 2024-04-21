@@ -1,4 +1,7 @@
 <script setup>
+
+import { defineProps } from 'vue';
+
 const pokemon = defineProps([
   "name",
   "hp",
@@ -16,8 +19,10 @@ const pokemon = defineProps([
   "moves",
   "abilities",
   "gameIndice",
-  
+  "evolutionChain",
+   
 ]);
+
 </script>
 
 
@@ -105,7 +110,17 @@ const pokemon = defineProps([
               <span>{{ pokemon.gameIndice }}</span>
               </ul>
           </section>
-          
+          <section>
+            <strong>Evolution Chain</strong>
+            <ul>
+              <li>
+                {{ pokemon.evolutionChain }}
+              </li>
+            </ul>
+          </section>
+          <section>
+            
+          </section>
         </div>
       </div>
     </div>
