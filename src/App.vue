@@ -1,11 +1,4 @@
 <script>
-import LanguageList from "./components/LanguageList.vue";
-
-export default {
-  components: {
-    LanguageList,
-  },
-};
 </script>
 
 
@@ -21,9 +14,7 @@ export default {
           class="d-inline-block align-text-top"
         />
        </router-link>
-       <!-- Language -->
-       <LanguageList/>
-       
+   
       
     </div>
       
