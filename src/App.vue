@@ -1,11 +1,18 @@
-<script setup>
+<script>
+import LanguageList from "./components/LanguageList.vue";
+
+export default {
+  components: {
+    LanguageList,
+  },
+};
 </script>
 
 
 <template>
   <!-- NAVBAR -->
   <nav class="navbar bg-primary">
-    <div class="container-fluid">
+   <div class="container-fluid">
       <router-link class="navbar-brand" href="/">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2000px-International_Pok%C3%A9mon_logo.svg.png"
@@ -13,8 +20,12 @@
           width="150"
           class="d-inline-block align-text-top"
         />
-      </router-link>
+       </router-link>
+       <!-- Language -->
+       <LanguageList/>
+      
     </div>
+      
   </nav>
   <!-- CONTENT -->
   <div class="main">
@@ -34,7 +45,6 @@
 
 <style>
 footer {
-  
   bottom: 0;
   width: 100%;
   display: flex;

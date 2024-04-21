@@ -3,36 +3,59 @@ import CardPokemon from "@/components/CardPokemon.vue";
 import { onMounted, reactive, ref, computed } from "vue";
 import PokemonList from "../components/PokemonList.vue";
 
+
 let pokemons = reactive(ref());
 let urlBase = ref(
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/"
 );
 let searchPokemonField = ref("");
 let pokemonSelected = reactive(ref());
+let searchPokemonType = ref("");
+let pokemonTypes = ref([]);
 
-onMounted(() => {
-  fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
-    .then((res) => res.json())
-    .then((res) => (pokemons.value = res.results));
+onMounted(async () => {
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0");
+  const data = await res.json();
+  pokemons.value = await Promise.all(
+    data.results.map(async (pokemon, index) => {
+      const pokemonRes = await fetch(pokemon.url);
+      const pokemonData = await pokemonRes.json();
+       const resTypes = await fetch("https://pokeapi.co/api/v2/type");
+       const dataTypes = await resTypes.json();
+       pokemonTypes.value = dataTypes.results.map((type) => type.name)
+      return {
+        ...pokemon,
+        id: index + 1,
+        type: pokemonData.types.map((type) => type.type.name),
+        
+      };
+    })
+  );
 });
 
 const pokemonsFilter = computed(() => {
-  if (pokemons.value && searchPokemonField.value) {
-    return pokemons.value.filter((pokemon) =>
-      pokemon.name
-        .toLowerCase()
-        .includes(searchPokemonField.value.toLowerCase())
+  if (pokemons.value) {
+    return pokemons.value.filter(
+      (pokemon) =>
+        (searchPokemonField.value === "" ||
+          pokemon.name
+            .toLowerCase()
+            .includes(searchPokemonField.value.toLowerCase()) ||
+          pokemon.id.toString() === searchPokemonField.value) &&
+        (searchPokemonType.value === "" ||
+          pokemon.type.includes(searchPokemonType.value.toLowerCase())) // Adicione esta linha para filtrar por tipo
     );
   }
   return pokemons.value;
 });
-
 const selectPokemon = async (pokemon) => {
   await fetch(pokemon.url)
-    .then(res => res.json())
-    .then(res => pokemonSelected.value = res);
-    
-
+    .then((res) => res.json())
+    .then((res) => {
+      pokemonSelected.value = res;
+      pokemon.type = res.types.map((type) => type.type.name); // Adicione esta linha para salvar o tipo do Pokémon
+    });
+  
   console.log(pokemonSelected.value);
 };
 </script>
@@ -41,9 +64,8 @@ const selectPokemon = async (pokemon) => {
   <main class="pokemonBody">
     <div class="container p-4">
       <div class="row mt-4">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-6 mb-3 mb-md-0">
           <CardPokemon
-            
             :name="pokemonSelected?.name"
             :xp="pokemonSelected?.base_experience"
             :hp="pokemonSelected?.stats[0].base_stat"
@@ -60,18 +82,13 @@ const selectPokemon = async (pokemon) => {
             :moves="pokemonSelected?.moves.map((moviments)=>moviments.move.name).join(', ')"
             :abilities="pokemonSelected?.abilities.map((typeSlot)=>typeSlot.ability.name).join(', ')"
             :gameIndice="pokemonSelected?.game_indices.map((game)=>game.version.name).join(', ')"
-            
-                          
           />
-
         </div>
-
         <div class="col-sm-12 col-md-6">
           <div class="card cardBody">
             <div class="card-body row">
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">🔎</span>
-
                 <input
                   v-model="searchPokemonField"
                   type="text"
@@ -79,17 +96,37 @@ const selectPokemon = async (pokemon) => {
                   id="searchPokemonField"
                   placeholder="Pesquisar"
                   aria-label="Username"
-                  a
-                  ria-describedby="basic-addon1"
+                  aria-describedby="basic-addon1"
                 />
+              </div>
+              <div class="mb-3">
+                <label for="searchPokemonType" class="form-label"
+                  >Filtrar por tipo</label
+                >
+                <select
+                  v-model="searchPokemonType"
+                  id="searchPokemonType"
+                  class="form-control"
+                >
+                  <option value="">Todos os tipos</option>
+                  <option
+                    v-for="type in pokemonTypes"
+                    :key="type"
+                    :value="type"
+                  >
+                    {{ type }}
+                  </option>
+                </select>
               </div>
               <PokemonList
                 v-for="pokemon in pokemonsFilter"
                 :key="pokemon.name"
                 :name="pokemon.name"
-                :urlBase="urlBase + pokemon.url.split('/')[6] + '.svg'"
-                :ids="pokemon.url.split('/')[6]"
+                :urlBase="urlBase + pokemon.id + '.svg'"
+                :ids="pokemon.id"
+                :type="pokemon.type.join()"
                 @click="selectPokemon(pokemon)"
+                class="mb-3"
               />
             </div>
           </div>
@@ -99,16 +136,34 @@ const selectPokemon = async (pokemon) => {
   </main>
 </template>
 
+
 <style scoped>
 .pokemonBody {
   background-image: url("https://i.pinimg.com/736x/2b/3b/04/2b3b04771ccca26c3dd96d781b0117ca.jpg");
   background-size: cover;
 }
 
-.cardBody {
+.card-body {
   background-color: rgb(42, 134, 88);
   max-height: 75vh;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+.card-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+  background-color: rgb(55, 173, 114);
+  border-radius: 10px;
+}
+
+.card-body::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 </style>
