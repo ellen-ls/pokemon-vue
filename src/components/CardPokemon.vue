@@ -113,10 +113,8 @@ const pokemon = defineProps([
           <section>
             <strong>Evolution Chain</strong>
             <ul>
-              <li>
-                {{ pokemon.evolutionChain }}
-              </li>
-            </ul>
+            <span>{{ pokemon.evolutionChain }}</span>
+           </ul>
           </section>
           <section>
             

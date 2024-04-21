@@ -17,7 +17,7 @@ let evolutionChain = reactive(ref([]));
 
 onMounted(async () => {
   const res = await fetch(
-    "https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0"
+    "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0"
   );
   const data = await res.json();
   pokemons.value = await Promise.all(
@@ -46,14 +46,14 @@ const pokemonsFilter = computed(() => {
         (searchPokemonField.value === "" ||
           pokemon.name
             .toLowerCase()
-            .includes(searchPokemonField.value.toLowerCase()) ||
+            .startsWith(searchPokemonField.value.toLowerCase()) ||
           pokemon.id.toString() === searchPokemonField.value) &&
         (searchPokemonType.value === "" ||
           pokemon.type.includes(searchPokemonType.value.toLowerCase())) && // Adicione esta linha para filtrar por tipo
         (searchPokemonSpecies.value === "" ||
           pokemon.species
             .toLowerCase()
-            .includes(searchPokemonSpecies.value.toLowerCase())) // Filtrar por espécie
+            .startsWith(searchPokemonSpecies.value.toLowerCase())) // Filtrar por espécie
     );
   }
   return pokemons.value;
