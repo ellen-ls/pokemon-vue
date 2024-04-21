@@ -16,6 +16,7 @@ const pokemon = defineProps([
   "moves",
   "abilities",
   "gameIndice",
+  
 ]);
 </script>
 
@@ -26,14 +27,14 @@ const pokemon = defineProps([
         <img
           v-if="pokemon.name"
           :src="pokemon.img"
-          height="150"
+          height="180"
           class="card-img-top"
           :alt="pokemon.name"
         />
         <img
           v-if="pokemon.name"
           :src="pokemon.img2"
-          height="150"
+          height="180"
           class="card-img-top"
           :alt="pokemon.name"
         />
@@ -47,8 +48,8 @@ const pokemon = defineProps([
       </div>
       <div class="card-body">
         <h5 class="card-title text-center">{{ pokemon.name || "???" }}</h5>
-        <p class="text-center border">{{ pokemon.types }}</p>
-        <hr />
+        <p class="text-center styleType">{{ pokemon.types }}</p>
+        
         <div class="col" v-if="pokemon.name">
           <section class="col">
             <strong>XP: </strong>
@@ -89,21 +90,22 @@ const pokemon = defineProps([
           <section class="col">
             <strong>Movimentos: </strong>
             <ul>
-            <li>{{ pokemon.moves }} </li>
+            <span>{{ pokemon.moves }} </span>
             </ul>
           </section>
           <section class="col">
             <strong>Habilidades: </strong>
-            <ul>
-              <li>{{ pokemon.abilities }}</li>
+             <ul>
+              <span>{{ pokemon.abilities }}</span>
             </ul>
           </section>
           <section class="col">
             <strong>Game Indice: </strong>
-            <ul>
-              <li>{{ pokemon.gameIndice }}</li>
-            </ul>
+              <ul>
+              <span>{{ pokemon.gameIndice }}</span>
+              </ul>
           </section>
+          
         </div>
       </div>
     </div>
@@ -115,10 +117,14 @@ const pokemon = defineProps([
 <style scoped>
 .imgPokemon {
   display: flex;
-  
-
- 
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background-color: #b870be;
 }
+
 .card{
    background-color: #874b8d;
 }
@@ -149,7 +155,7 @@ const pokemon = defineProps([
 .card-body {
   background-color: #b870be;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 20px;
   margin: 20px auto;
   width: 80%;
@@ -173,6 +179,13 @@ const pokemon = defineProps([
 .col {
   flex: 1;
   margin: 5px;
+}
+
+.styleType{
+  background-color: rgb(216, 211, 219);
+  border: 1px solid rgb(87, 0, 128);
+  border-radius: 10px;
+  
 }
 
 </style>

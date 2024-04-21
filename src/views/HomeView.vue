@@ -12,22 +12,27 @@ let searchPokemonField = ref("");
 let pokemonSelected = reactive(ref());
 let searchPokemonType = ref("");
 let pokemonTypes = ref([]);
+let searchPokemonSpecies = ref("");
 
 onMounted(async () => {
-  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0");
+  const res = await fetch(
+    "https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0"
+  );
   const data = await res.json();
   pokemons.value = await Promise.all(
     data.results.map(async (pokemon, index) => {
       const pokemonRes = await fetch(pokemon.url);
       const pokemonData = await pokemonRes.json();
-       const resTypes = await fetch("https://pokeapi.co/api/v2/type");
-       const dataTypes = await resTypes.json();
-       pokemonTypes.value = dataTypes.results.map((type) => type.name)
+      const resTypes = await fetch("https://pokeapi.co/api/v2/type");
+      const dataTypes = await resTypes.json();
+      pokemonTypes.value = dataTypes.results.map((type) => type.name);
+      const speciesRes = await fetch(pokemonData.species.url); // Fetch the species data
+      const speciesData = await speciesRes.json();
       return {
+        species: speciesData.name,
         ...pokemon,
         id: index + 1,
         type: pokemonData.types.map((type) => type.type.name),
-        
       };
     })
   );
@@ -43,7 +48,11 @@ const pokemonsFilter = computed(() => {
             .includes(searchPokemonField.value.toLowerCase()) ||
           pokemon.id.toString() === searchPokemonField.value) &&
         (searchPokemonType.value === "" ||
-          pokemon.type.includes(searchPokemonType.value.toLowerCase())) // Adicione esta linha para filtrar por tipo
+          pokemon.type.includes(searchPokemonType.value.toLowerCase())) && // Adicione esta linha para filtrar por tipo
+        (searchPokemonSpecies.value === "" ||
+          pokemon.species
+            .toLowerCase()
+            .includes(searchPokemonSpecies.value.toLowerCase())) // Filtrar por espécie
     );
   }
   return pokemons.value;
@@ -55,15 +64,15 @@ const selectPokemon = async (pokemon) => {
       pokemonSelected.value = res;
       pokemon.type = res.types.map((type) => type.type.name); // Adicione esta linha para salvar o tipo do Pokémon
     });
-  
+
   console.log(pokemonSelected.value);
 };
 </script>
 
 <template>
   <main class="pokemonBody">
-    <div class="container p-4">
-      <div class="row mt-4">
+       <div class="container p-4">
+       <div class="row mt-4">
         <div class="col-sm-12 col-md-6 mb-3 mb-md-0">
           <CardPokemon
             :name="pokemonSelected?.name"
@@ -78,10 +87,24 @@ const selectPokemon = async (pokemon) => {
             :weight="pokemonSelected?.weight"
             :img="pokemonSelected?.sprites.front_default"
             :img2="pokemonSelected?.sprites.back_default"
-            :types="pokemonSelected?.types.map((type)=>type.type.name).join(', ')"
-            :moves="pokemonSelected?.moves.map((moviments)=>moviments.move.name).join(', ')"
-            :abilities="pokemonSelected?.abilities.map((typeSlot)=>typeSlot.ability.name).join(', ')"
-            :gameIndice="pokemonSelected?.game_indices.map((game)=>game.version.name).join(', ')"
+            :types="
+              pokemonSelected?.types.map((type) => type.type.name).join(', ')
+            "
+            :moves="
+              pokemonSelected?.moves
+                .map((moviments) => moviments.move.name)
+                .join(', ')
+            "
+            :abilities="
+              pokemonSelected?.abilities
+                .map((typeSlot) => typeSlot.ability.name)
+                .join(', ')
+            "
+            :gameIndice="
+              pokemonSelected?.game_indices
+                .map((game) => game.version.name)
+                .join(', ')
+            "
           />
         </div>
         <div class="col-sm-12 col-md-6">
@@ -94,9 +117,21 @@ const selectPokemon = async (pokemon) => {
                   type="text"
                   class="form-control"
                   id="searchPokemonField"
-                  placeholder="Pesquisar"
+                  placeholder="Pesquisar nome ou ID"
                   aria-label="Username"
                   aria-describedby="basic-addon1"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="searchPokemonSpecies" class="form-label"
+                  >Filtrar por espécie</label
+                >
+                <input
+                  v-model="searchPokemonSpecies"
+                  type="text"
+                  class="form-control"
+                  id="searchPokemonSpecies"
+                  placeholder="Pesquisar espécie"
                 />
               </div>
               <div class="mb-3">

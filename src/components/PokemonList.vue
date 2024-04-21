@@ -8,13 +8,14 @@ const pokemon = defineProps(["name", "urlBase", "ids", "type"])
   <div class="card p-2 mb-3 cardListPokemon">
     <p class="text-start text-secondary">#{{ pokemon.ids }}</p>
     <p class="text-center">{{ pokemon.name }}</p>
-    <p class="text-center">{{ pokemon.type }}</p>
+    
     <img 
       :src="urlBase" 
       class="card-img-top" 
       alt="..."
       height="90"
     >
+   <p class="text-center styleType">{{ pokemon.type }}</p>
   </div>
 </div>
 </template>
@@ -28,6 +29,12 @@ const pokemon = defineProps(["name", "urlBase", "ids", "type"])
 
 .cardListPokemon:hover {
     transform: scale(1.1);
+}
+.styleType{
+  background-color: rgb(202, 236, 217);
+  border: 1px solid green;
+  border-radius: 10px;
+  margin: 5px;
 }
 
 </style>
