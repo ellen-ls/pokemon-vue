@@ -26,7 +26,8 @@ Este é um aplicativo de Pokédex desenvolvido em Vue.js, utilizando a API PokeA
 
 - Vue.js
 - HTML
-- CSS (Bootstrap opcional)
+- CSS
+- Bootstrap 
 - JavaScript
 
 ## Instalação e Uso
