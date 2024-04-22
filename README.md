@@ -2,6 +2,8 @@
 
 Este é um aplicativo de Pokédex desenvolvido em Vue.js, utilizando a API PokeAPI para obter informações sobre os Pokémon.
 
+Deploy Verce: https://pokemon-vue-steel.vercel.app/
+
 ## Funcionalidades
 
 :heavy_check_mark: Listagem dos Pokémon com scroll infinito
