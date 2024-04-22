@@ -43,7 +43,7 @@ npm install
 ```
 3.Inicie o servidor de desenvolvimento:
 ```sh
-npm run serve
+npm run dev
 ```
 
 ## Estrutura do Projeto
