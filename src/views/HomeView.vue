@@ -1,136 +1,135 @@
 <script setup>
-import CardPokemon from "@/components/CardPokemon.vue";
-import { onMounted, reactive, ref, computed } from "vue";
-import PokemonList from "../components/PokemonList.vue";
+  // Importações do Vue
+  import { onMounted, reactive, ref, computed } from "vue";
+  // Componentes utilizados
+  import PokemonList from "../components/PokemonList.vue";
+  import CardPokemon from "@/components/CardPokemon.vue";
 
-// Definindo variáveis reativas
+ 
+ 
+  // Variáveis reativas
+  let pokemons = reactive(ref());
+  let urlBase = ref("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/");
+  let searchPokemonField = ref("");
+  let pokemonSelected = reactive(ref());
+  let searchPokemonType = ref("");
+  let pokemonTypes = ref([]);
+  let searchPokemonSpecies = ref("");
+  let evolutionChain = reactive(ref([]));
+  let selectedLanguage = ref("pt");
+  
+ 
 
-let pokemons = reactive(ref());// Lista de Pokémon
+  // Função executada após a montagem do componente
+  onMounted(async () => {
+    try {
+      // Fetch para obter a lista inicial de Pokémon
+      const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100&offset=0");
+      const data = await res.json();
+      // Mapeamento dos dados obtidos
+      pokemons.value = await Promise.all(
+        data.results.map(async (pokemon, index) => {
+          const pokemonRes = await fetch(pokemon.url);
+          const pokemonData = await pokemonRes.json();
+          const resTypes = await fetch("https://pokeapi.co/api/v2/type");
+          const dataTypes = await resTypes.json();
+          pokemonTypes.value = dataTypes.results.map((type) => type.name);
+          const speciesRes = await fetch(pokemonData.species.url);
+          const speciesData = await speciesRes.json();
+          return {
+            ...pokemon,
+            id: index + 1,
+            type: pokemonData.types.map((type) => type.type.name),
+            species: speciesData.name,
+          };
+        })
+      );
+    } catch (error) {
+      console.error("Failed to fetch initial data:", error);
+    }
+  });
 
-// URL base para as imagens dos Pokémon
-let urlBase = ref(
-  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/"
-);
-let searchPokemonField = ref("");// Campo de busca por nome ou ID do Pokémon
-let pokemonSelected = reactive(ref()); // Pokémon selecionado para exibir detalhes
-let searchPokemonType = ref("");// Tipo de Pokémon para filtragem
-let pokemonTypes = ref([]);// Lista de tipos de Pokémon
-let searchPokemonSpecies = ref(""); // Espécie de Pokémon para filtragem
-let evolutionChain = reactive(ref([]));// Cadeia de evolução do Pokémon selecionado
-let selectedLanguage = ref("pt");// Idioma selecionado
+  // Função computada para filtrar os Pokémon exibidos na lista
+  const pokemonsFilter = computed(() => {
+    if (pokemons.value) {
+      return pokemons.value.filter(
+        (pokemon) =>
+          (searchPokemonField.value === "" ||
+            pokemon.name.toLowerCase().startsWith(searchPokemonField.value.toLowerCase()) ||
+            pokemon.id.toString() === searchPokemonField.value) &&
+          (searchPokemonType.value === "" ||
+            pokemon.type.includes(searchPokemonType.value.toLowerCase())) &&
+          (searchPokemonSpecies.value === "" ||
+            pokemon.species.toLowerCase().startsWith(searchPokemonSpecies.value.toLowerCase()))
+      );
+    }
+    return pokemons.value;
+  });
 
-// Função executada após o componente ser montado
-onMounted(async () => {
-// Buscando dados dos Pokémon na API
-  const res = await fetch(
-    "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0"
-  );
-  const data = await res.json();
-  // Mapeando os dados dos Pokémon e suas espécies
-  pokemons.value = await Promise.all(
-    data.results.map(async (pokemon, index) => {
-      const pokemonRes = await fetch(pokemon.url);
-      const pokemonData = await pokemonRes.json();
-  // Buscando os tipos de Pokémon na API
-      const resTypes = await fetch("https://pokeapi.co/api/v2/type");
-      const dataTypes = await resTypes.json();
-      pokemonTypes.value = dataTypes.results.map((type) => type.name);
-      const speciesRes = await fetch(pokemonData.species.url);
-      const speciesData = await speciesRes.json();
-      return {
-        species: speciesData.name,
-        ...pokemon,
-        id: index + 1,
-        type: pokemonData.types.map((type) => type.type.name),
-      };
-    })
-  );
-});
+  // Função para selecionar um Pokémon
+  const selectPokemon = async (pokemon) => {
+    try {
+      const res = await fetch(`${pokemon.url}?language=${selectedLanguage.value}`);
+      const data = await res.json();
+      pokemonSelected.value = data;
+      pokemon.type = data.types.map((type) => type.type.name);
+      fetchEvolutionChain(data.species.url);
+    } catch (error) {
+      console.error("Failed to fetch selected Pokemon:", error);
+    }
+  };
 
-// Função para filtrar os Pokémon com base nos critérios selecionados
-const pokemonsFilter = computed(() => {
-  if (pokemons.value) {
-    return pokemons.value.filter(
-      (pokemon) =>
-        (searchPokemonField.value === "" ||
-          pokemon.name
-            .toLowerCase()
-            .startsWith(searchPokemonField.value.toLowerCase()) ||
-          pokemon.id.toString() === searchPokemonField.value) &&
-        (searchPokemonType.value === "" ||
-          pokemon.type.includes(searchPokemonType.value.toLowerCase())) && // Adicione esta linha para filtrar por tipo
-        (searchPokemonSpecies.value === "" ||
-          pokemon.species
-            .toLowerCase()
-            .startsWith(searchPokemonSpecies.value.toLowerCase())) // Filtrar por espécie
-    );
+  // Função recursiva para obter os nomes da cadeia de evolução de um Pokémon
+  function getEvolutionNames(chain) {
+    let names = [chain.species.name];
+    if (chain.evolves_to && chain.evolves_to.length > 0) {
+      chain.evolves_to.forEach((evo) => {
+        names.push(...getEvolutionNames(evo));
+      });
+    }
+    return names;
   }
-  return pokemons.value;
-});
 
-// Função para selecionar um Pokémon e exibir seus detalhes
-const selectPokemon = async (pokemon) => {
-  await fetch(`${pokemon.url}?language=${selectedLanguage.value}`)
-    .then((res) => res.json())
-    .then((res) => {
-      pokemonSelected.value = res;
-      pokemon.type = res.types.map((type) => type.type.name); // Adicione esta linha para salvar o tipo do Pokémon
-      fetchEvolutionChain(res.species.url);
-    });
-};
+  // Função para buscar a cadeia de evolução de um Pokémon
+  const fetchEvolutionChain = async (speciesUrl) => {
+    try {
+      const res = await fetch(`${speciesUrl}?language=${selectedLanguage.value}`);
+      const data = await res.json();
+      const evolutionRes = await fetch(data.evolution_chain.url);
+      const evolutionData = await evolutionRes.json();
+      const evolutionNames = getEvolutionNames(evolutionData.chain);
+      evolutionChain.value = evolutionNames;
+    } catch (error) {
+      console.error("Failed to fetch evolution chain:", error);
+    }
+  };
 
-// Função recursiva para obter os nomes da cadeia de evolução do Pokémon selecionado
-function getEvolutionNames(chain) {
-  let names = [chain.species.name];
-  if (chain.evolves_to && chain.evolves_to.length > 0) {
-    chain.evolves_to.forEach((evo) => {
-      names.push(...getEvolutionNames(evo));
-    });
-  }
-  return names;
-}
-
-// Função para buscar a cadeia de evolução do Pokémon selecionado
-const fetchEvolutionChain = async (speciesUrl) => {
-  const speciesRes = await fetch(
-    `${speciesUrl}?language=${selectedLanguage.value}`
-  );
-  const speciesData = await speciesRes.json();
-  const evolutionChainRes = await fetch(speciesData.evolution_chain.url);
-  const evolutionChainData = await evolutionChainRes.json();
-
-  const evolutionNames = getEvolutionNames(evolutionChainData.chain);
-  evolutionChain.value = evolutionNames;
-};
-
-// Função para mudar o idioma e recarregar os dados dos Pokémon
-const changeLanguage = async () => {
-  console.log('Selected Language:', selectedLanguage.value);
-
-// Limpar a lista de Pokémon para recarregar com o novo idioma
-  pokemons.value = [];
-
-// Recarregar a lista de Pokémon com o novo idioma selecionado
-  const res = await fetch(
-    `https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0&language=${selectedLanguage.value}`
-  );
-  const data = await res.json();
-  pokemons.value = await Promise.all(
-    data.results.map(async (pokemon, index) => {
-      const pokemonRes = await fetch(pokemon.url);
-      const pokemonData = await pokemonRes.json();
-      const speciesRes = await fetch(pokemonData.species.url);
-      const speciesData = await speciesRes.json();
-      return {
-        species: speciesData.name,
-        ...pokemon,
-        id: index + 1,
-        type: pokemonData.types.map((type) => type.type.name),
-      };
-    })
-  );
-};
+  // Função para alterar o idioma dos Pokémon exibidos
+  const changeLanguage = async () => {
+    console.log("Selected Language:", selectedLanguage.value);
+    try {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0&language=${selectedLanguage.value}`);
+      const data = await res.json();
+      pokemons.value = await Promise.all(
+        data.results.map(async (pokemon, index) => {
+          const pokemonRes = await fetch(pokemon.url);
+          const pokemonData = await pokemonRes.json();
+          const speciesRes = await fetch(pokemonData.species.url);
+          const speciesData = await speciesRes.json();
+          return {
+            species: speciesData.name,
+            ...pokemon,
+            id: index + 1,
+            type: pokemonData.types.map((type) => type.type.name),
+          };
+        })
+      );
+    } catch (error) {
+      console.error("Failed to fetch Pokemon data in selected language:", error);
+    }
+  };
 </script>
+
 
 <template>
   <main class="pokemonBody">

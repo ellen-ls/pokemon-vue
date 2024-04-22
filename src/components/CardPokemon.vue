@@ -1,6 +1,5 @@
 <script setup>
-
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
 
 const pokemon = defineProps([
   "name",
@@ -20,109 +19,105 @@ const pokemon = defineProps([
   "abilities",
   "gameIndice",
   "evolutionChain",
-   
 ]);
-
 </script>
 
 
 <template>
   <div class="card show-specifications">
+      
     <div class="imgPokemon">
-        <img
-          v-if="pokemon.name"
-          :src="pokemon.img"
-          height="180"
-          class="card-img-top"
-          :alt="pokemon.name"
-        />
-        <img
-          v-if="pokemon.name"
-          :src="pokemon.img2"
-          height="180"
-          class="card-img-top"
-          :alt="pokemon.name"
-        />
-        <img
-          v-else
-          src="../assets/egg_pokemon.svg"
-          height="250"
-          class="card-img-top"
-          alt="???"
-        />
-      </div>
-      <div class="card-body">
-        <h5 class="card-title text-center">{{ pokemon.name || "???" }}</h5>
-        <p class="text-center styleType">{{ pokemon.types }}</p>
-        
-        <div class="col" v-if="pokemon.name">
-          <section class="col">
-            <strong>XP: </strong>
-            <span>{{ pokemon.xp }}</span>
-          </section>
-          <section class="col">
-            <strong>HP: </strong>
-            <span>{{ pokemon.hp }}</span>
-          </section>
-           <section class="col">
-            <strong>Ataque: </strong>
-            <span>{{ pokemon.attack }}</span>
-          </section>
-            <section class="col">
-            <strong>Defesa: </strong>
-            <span>{{ pokemon.defense }}</span>
-          </section>
-            <section class="col">
-            <strong>Ataque especial: </strong>
-            <span>{{ pokemon.special_attack}}</span>
-          </section>
-           <section class="col">
-            <strong>Defesa especial: </strong>
-            <span>{{ pokemon.special_defense }}</span>
-          </section>
-            <section class="col">
-            <strong>Velocidade: </strong>
-            <span>{{ pokemon.speed }}</span>
-          </section>
-          <section class="col">
-            <strong>Altura: </strong>
-            <span>{{ pokemon.height * 2.54 }} cm</span>
-          </section>
-          <section class="col">
-            <strong>Peso: </strong>
-            <span>{{ (pokemon.weight * 0.453592).toFixed(2) }} Kg</span>
-          </section>
-          <section class="col">
-            <strong>Movimentos: </strong>
-            <ul>
+      <img
+        v-if="pokemon.name"
+        :src="pokemon.img"
+        height="180"
+        class="card-img-top"
+        :alt="pokemon.name"
+      />
+      <img
+        v-if="pokemon.name"
+        :src="pokemon.img2"
+        height="180"
+        class="card-img-top"
+        :alt="pokemon.name"
+      />
+      <img
+        v-else
+        src="../assets/egg_pokemon.svg"
+        height="250"
+        class="card-img-top"
+        alt="???"
+      />
+    </div>
+    <div class="card-body">
+      <h5 class="card-title text-center">{{ pokemon.name || "???" }}</h5>
+      <p class="text-center styleType">{{ pokemon.types }}</p>
+
+      <div class="col" v-if="pokemon.name">
+        <section class="col">
+          <strong>XP: </strong>
+          <span>{{ pokemon.xp }}</span>
+        </section>
+        <section class="col">
+          <strong>HP: </strong>
+          <span>{{ pokemon.hp }}</span>
+        </section>
+        <section class="col">
+          <strong>Ataque: </strong>
+          <span>{{ pokemon.attack }}</span>
+        </section>
+        <section class="col">
+          <strong>Defesa: </strong>
+          <span>{{ pokemon.defense }}</span>
+        </section>
+        <section class="col">
+          <strong>Ataque especial: </strong>
+          <span>{{ pokemon.special_attack }}</span>
+        </section>
+        <section class="col">
+          <strong>Defesa especial: </strong>
+          <span>{{ pokemon.special_defense }}</span>
+        </section>
+        <section class="col">
+          <strong>Velocidade: </strong>
+          <span>{{ pokemon.speed }}</span>
+        </section>
+        <section class="col">
+          <strong>Altura: </strong>
+          <span>{{ pokemon.height * 2.54 }} cm</span>
+        </section>
+        <section class="col">
+          <strong>Peso: </strong>
+          <span>{{ (pokemon.weight * 0.453592).toFixed(2) }} Kg</span>
+        </section>
+        <section class="col">
+          <strong>Movimentos: </strong>
+          <ul>
             <span>{{ pokemon.moves }} </span>
-            </ul>
-          </section>
-          <section class="col">
-            <strong>Habilidades: </strong>
-             <ul>
-              <span>{{ pokemon.abilities }}</span>
-            </ul>
-          </section>
-          <section class="col">
-            <strong>Game Indice: </strong>
-              <ul>
-              <span>{{ pokemon.gameIndice }}</span>
-              </ul>
-          </section>
-          <section>
-            <strong>Evolution Chain</strong>
-            <ul>
+          </ul>
+        </section>
+        <section class="col">
+          <strong>Habilidades: </strong>
+          <ul>
+            <span>{{ pokemon.abilities }}</span>
+          </ul>
+        </section>
+        <section class="col">
+          <strong>Game Indice: </strong>
+          <ul>
+            <span>{{ pokemon.gameIndice }}</span>
+          </ul>
+        </section>
+        <section>
+          <strong>Evolution Chain</strong>
+          <ul>
             <span>{{ pokemon.evolutionChain }}</span>
-           </ul>
-          </section>
-          <section>
-            
-          </section>
-        </div>
+          </ul>
+        </section>
+        
       </div>
     </div>
-  
+  </div>
 </template>
 
 
@@ -138,15 +133,15 @@ const pokemon = defineProps([
   background-color: #b870be;
 }
 
-.card{
-   background-color: #874b8d;
+.card {
+  background-color: #874b8d;
 }
 .show-specifications {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 75vh;
-  scrollbar-width: thin; 
-  scrollbar-color: #874b8d #f1f1f1; 
+  scrollbar-width: thin;
+  scrollbar-color: #874b8d #f1f1f1;
 }
 
 .show-specifications::-webkit-scrollbar {
@@ -194,11 +189,9 @@ const pokemon = defineProps([
   margin: 5px;
 }
 
-.styleType{
+.styleType {
   background-color: rgb(216, 211, 219);
   border: 1px solid rgb(87, 0, 128);
   border-radius: 10px;
-  
 }
-
 </style>
