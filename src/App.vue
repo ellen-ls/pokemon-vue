@@ -1,37 +1,38 @@
-<script>
+<script setup>
+
 </script>
 
-
 <template>
-  <!-- NAVBAR -->
-  <nav class="navbar bg-primary">
-   <div class="container-fluid">
-      <router-link class="navbar-brand" href="/">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2000px-International_Pok%C3%A9mon_logo.svg.png"
-          alt="Logo"
-          width="150"
-          class="d-inline-block align-text-top"
-        />
-       </router-link>
-   
-      
+  <div>
+    <nav class="navbar bg-primary">
+      <div class="container-fluid d-flex justify-content-between">
+        <!-- Logo -->
+        <RouterLink class="navbar-brand" to="/">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2000px-International_Pok%C3%A9mon_logo.svg.png"
+            alt="Logo"
+            width="150"
+            class="d-inline-block align-text-top"
+          />
+        </RouterLink>
+      </div>
+    </nav>
+    <div class="main">
+      <router-view> </router-view>
     </div>
-      
-  </nav>
-  <!-- CONTENT -->
-  <div class="main">
-    <router-view></router-view>
+    <footer class="bg-primary text-light">
+      <div class="container-fluid">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-auto">
+            <span
+              >Desenvolvido com Vue por Ellen Lima e Silva em
+              {{ new Date().getFullYear() }}.</span
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
-
-  <footer class="bg-primary text-light">
-    <div>
-      <span
-        >Desenvolvido com Vue por Ellen Lima e Silva em
-        {{ new Date().getFullYear() }} .
-      </span>
-    </div>
-  </footer>
 </template>
 
 
